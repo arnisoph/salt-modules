@@ -2,7 +2,7 @@
 salt-modules
 ============
 
-A set of custom modules which are helpful for daily work
+A set of custom Salt modules which are helpful for daily work
 
 NOTICE BEFORE YOU USE
 ---------------------
