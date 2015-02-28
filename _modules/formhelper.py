@@ -98,6 +98,11 @@ def get_defaults(formula, saltenv, file_extensions=['yaml', 'json'], merge=True)
 
             merged_grain_maps = {}
             for grain, grain_map in merged_maps[ext].items():
+
+                # Do we have something to merge?
+                if grain_map is None:
+                    continue
+
                 if not merged_grain_maps:
                     merged_grain_maps = grain_map
                     continue
