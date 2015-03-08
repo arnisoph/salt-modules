@@ -69,7 +69,7 @@ def generate_state(state_module, state_function, attrs=[]):
     return {state_module: attrs}
 
 
-def get_defaults(formula, saltenv, file_extensions=['yaml', 'json'], merge=True):
+def defaults(formula, saltenv='base', file_extensions=['yaml', 'json'], merge=True):
     '''
     TODO doc
     '''
@@ -115,3 +115,5 @@ def get_defaults(formula, saltenv, file_extensions=['yaml', 'json'], merge=True)
 
         defaults = merged_maps
     return defaults
+
+get_defaults = defaults
