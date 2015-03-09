@@ -45,8 +45,11 @@ Thumbs.db
 .idea
 *.iml
 *~
+*.tmp
 
 # Development VMs and containers #
-#################################
-vagrant/.env
-vagrant/.vagrant/
+##################################
+.vagrant/
+test/.env
+test/.vagrant/
+test/nodes.yaml

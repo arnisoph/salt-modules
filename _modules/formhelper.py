@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-
-# TODO add documentation
-
+"""
+Module that provides helper functions used by formulas
+"""
 from __future__ import absolute_import
+
+# Import python libs
 import json
 import os
 import yaml
@@ -14,18 +16,18 @@ from salt.utils.dictupdate import update
 
 
 def _mk_file_client():
-    '''
+    """
     Create a file client and add it to the context
-    '''
+    """
     if 'cp.fileclient' not in __context__:
         __context__['cp.fileclient'] = salt.fileclient.get_file_client(__opts__)
 
 
 def _cache_files(formula, file_extensions, saltenv):
-    '''
+    """
     Generates a list of salt://<pillar_name>/defaults.(json|yaml) files
     and fetches them from the Salt master.
-    '''
+    """
     _mk_file_client()
     formula = formula.replace('.', '/')
     cached_files = {}
@@ -44,20 +46,18 @@ def _cache_files(formula, file_extensions, saltenv):
 
 
 def _load_data(cached_file):
-    '''
+    """
     Given a pillar_name and the template cache location, attempt to load
     the defaults.json from the cache location. If it does not exist, try
     defaults.yaml.
-    '''
+    """
     file_name, file_type = os.path.splitext(cached_file)
+    loader = None
 
-    if file_type == '.yaml':
-        loader = yaml
-    elif file_type == '.json':
+    if file_type == '.json':
         loader = json
     else:
-        # TODO panic
-        pass
+        loader = yaml
 
     with salt.utils.fopen(cached_file) as fhr:
         data = loader.load(fhr)
@@ -70,9 +70,17 @@ def generate_state(state_module, state_function, attrs=[]):
 
 
 def defaults(formula, saltenv='base', file_extensions=['yaml', 'json'], merge=True):
-    '''
-    TODO doc
-    '''
+    """
+    Read a formula's defaults files like ``defaults.(yaml|json)`` and ``custom_defaults.(yaml|json)``,
+    filter maps based on grains and override the result with pillars (if set).
+
+    CLI Example:
+
+    .. code-block:: bash
+
+        salt-call formhelper.defaults skeleton
+    """
+    # TODO remove yaml/json level, return data directly
     defaults = _cache_files(formula, file_extensions, saltenv)
 
     if not defaults:
@@ -116,4 +124,5 @@ def defaults(formula, saltenv='base', file_extensions=['yaml', 'json'], merge=Tr
         defaults = merged_maps
     return defaults
 
+# Alias function for backwards-compatiblity
 get_defaults = defaults
