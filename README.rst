@@ -45,6 +45,7 @@ TODO
 * table/ matrix: os/salt compatibility (dedicated file)
 * add list of available modules?
 * add tests
+* patch formhelper with upstream defaults module?
 
 
 Additional resources
