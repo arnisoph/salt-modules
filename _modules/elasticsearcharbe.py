@@ -50,10 +50,10 @@ def index_create(index, body={}, hosts=None, profile='elasticsearch'):
             return True
         else:
             result = es.indices.create(index=index, body=body) # TODO error handling
-            return index_get(index)
+            return True
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def index_delete(index, hosts=None, profile='elasticsearch'):
@@ -74,8 +74,8 @@ def index_delete(index, hosts=None, profile='elasticsearch'):
             if result.get('acknowledged', False): # TODO error handling
                 return True
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def index_exists(index, hosts=None, profile='elasticsearch'):
@@ -92,9 +92,14 @@ def index_exists(index, hosts=None, profile='elasticsearch'):
             index=[index]
         if es.indices.exists(index=index):
             return True
+        else:
+            return False
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    except elasticsearch.exceptions.ConnectionError:
+        # TODO log error
+        return None
+    return None
 
 
 def index_get(index, hosts=None, profile='elasticsearch'):
@@ -129,8 +134,8 @@ def mapping_create(index, doc_type, body, hosts=None, profile='elasticsearch'):
         result = es.indices.put_mapping(index=index, doc_type=doc_type, body=body) # TODO error handling
         return mapping_get(index, doc_type)
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def mapping_delete(index, doc_type, hosts=None, profile='elasticsearch'):
@@ -149,8 +154,8 @@ def mapping_delete(index, doc_type, hosts=None, profile='elasticsearch'):
         if result.get('acknowledged', False): # TODO error handling
             return True
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def mapping_get(index, doc_type, hosts=None, profile='elasticsearch'):
@@ -182,10 +187,10 @@ def index_template_create(index, doc_type, body, hosts=None, profile='elasticsea
     es = _get_instance(hosts, profile)
     try:
         result = es.indices.put_template(index=index, doc_type=doc_type, body=body) # TODO error handling
-        return template_get(index, doc_type)
+        return True
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
@@ -204,8 +209,8 @@ def template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
         if result.get('acknowledged', False): # TODO error handling
             return True
     except elasticsearch.exceptions.NotFoundError:
-        return False
-    return False
+        return None
+    return None
 
 
 def template_get(index, doc_type, hosts=None, profile='elasticsearch'):
