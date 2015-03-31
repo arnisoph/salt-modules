@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-"""
+'''
 Module that provides helper functions used by formulas
-"""
+'''
 from __future__ import absolute_import
 
 # Import python libs
@@ -16,41 +16,38 @@ from salt.utils.dictupdate import update
 
 
 def _mk_file_client():
-    """
+    '''
     Create a file client and add it to the context
-    """
+    '''
     if 'cp.fileclient' not in __context__:
         __context__['cp.fileclient'] = salt.fileclient.get_file_client(__opts__)
 
 
-def _cache_files(formula, file_extensions, saltenv):
-    """
+def _cache_files(formula, file_extension, saltenv):
+    '''
     Generates a list of salt://<pillar_name>/defaults.(json|yaml) files
     and fetches them from the Salt master.
-    """
+    '''
     _mk_file_client()
     formula = formula.replace('.', '/')
     cached_files = {}
 
-    for ext in file_extensions:
-        for file_name in ['defaults', 'custom_defaults']:
-            source_url = 'salt://{formula}/{file_name}.{file_ext}'.format(formula=formula, file_name=file_name, file_ext=ext)
-            cached_file = __context__['cp.fileclient'].cache_file(source_url, saltenv)
+    for file_name in ['defaults', 'custom_defaults']:
+        source_url = 'salt://{formula}/{file_name}.{file_ext}'.format(formula=formula, file_name=file_name, file_ext=file_extension)
+        cached_file = __context__['cp.fileclient'].cache_file(source_url, saltenv)
 
-            if cached_file:
-                if ext not in cached_files.keys():
-                    cached_files[ext] = {}
-                cached_files[ext][file_name] = _load_data(cached_file)
+        if cached_file:
+            cached_files[file_name] = _load_data(cached_file)
 
     return cached_files
 
 
 def _load_data(cached_file):
-    """
+    '''
     Given a pillar_name and the template cache location, attempt to load
     the defaults.json from the cache location. If it does not exist, try
     defaults.yaml.
-    """
+    '''
     file_name, file_type = os.path.splitext(cached_file)
     loader = None
 
@@ -69,8 +66,8 @@ def generate_state(state_module, state_function, attrs=[]):
     return {state_module: attrs}
 
 
-def defaults(formula, saltenv='base', file_extensions=['yaml', 'json'], merge=True):
-    """
+def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
+    '''
     Read a formula's defaults files like ``defaults.(yaml|json)`` and ``custom_defaults.(yaml|json)``,
     filter maps based on grains and override the result with pillars (if set).
 
@@ -79,51 +76,51 @@ def defaults(formula, saltenv='base', file_extensions=['yaml', 'json'], merge=Tr
     .. code-block:: bash
 
         salt-call formhelper.defaults skeleton
-    """
+    '''
     # TODO remove yaml/json level, return data directly
     # TODO add param to specifc formula path/location manually
-    defaults = _cache_files(formula, file_extensions, saltenv)
+    defaults_files = _cache_files(formula, file_extension, saltenv)
 
-    if not defaults:
+    if not defaults_files:
         return {}
 
     # TODO comment this beast
     # TODO optimize
     if merge:
         merged_maps = {}
-        for ext, datamap in defaults.items():
-            merged_maps[ext] = {}
-            for file_name, rawmaps in datamap.items():
-                for grain, rawmap in rawmaps.items():
-                    if grain not in merged_maps[ext].keys():
-                        merged_maps[ext][grain] = {}
-                    merged_maps[ext][grain][file_name] = __salt__['grains.filter_by'](rawmap, grain)
 
-            for grain, file_maps in merged_maps[ext].items():
-                defaults_map = merged_maps[ext][grain].get('defaults', {})
-                custom_defaults_map = merged_maps[ext][grain].get('custom_defaults', {})
-                update(defaults_map, custom_defaults_map)
-                merged_maps[ext][grain] = defaults_map
+        for file_name, rawmaps in defaults_files.items():
+            for grain, rawmap in rawmaps.items():
+                if grain not in merged_maps.keys():
+                    merged_maps[grain] = {}
+                merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain)
 
-            merged_grain_maps = {}
-            for grain, grain_map in merged_maps[ext].items():
+        for grain, file_maps in merged_maps.items():
+            defaults_map = merged_maps[grain].get('defaults', {})
+            custom_defaults_map = merged_maps[grain].get('custom_defaults', {})
+            update(defaults_map, custom_defaults_map)
+            merged_maps[grain] = defaults_map
 
-                # Do we have something to merge?
-                if grain_map is None:
-                    continue
+        merged_grain_maps = {}
+        for grain, grain_map in merged_maps.items():
 
-                if not merged_grain_maps:
-                    merged_grain_maps = grain_map
-                    continue
+            # Do we have something to merge?
+            if grain_map is None:
+                continue
 
-                update(merged_grain_maps, grain_map)
-            merged_maps[ext] = merged_grain_maps
+            if not merged_grain_maps:
+                merged_grain_maps = grain_map
+                continue
 
-            pillar_path = '{formula}:lookup'.format(formula=formula)
-            update(merged_maps[ext], __salt__['pillar.get'](pillar_path, {}))
+            update(merged_grain_maps, grain_map)
+        merged_maps = merged_grain_maps
 
-        defaults = merged_maps
-    return defaults
+        pillar_path = '{formula}:lookup'.format(formula=formula)
+        update(merged_maps, __salt__['pillar.get'](pillar_path, {}))
+
+        return merged_maps
+    else:
+       return defaults_files
 
 # Alias function for backwards-compatiblity
 get_defaults = defaults
