@@ -80,6 +80,10 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
 
         salt-call formhelper.defaults skeleton
     '''
+
+    if isinstance(file_extension, list):
+        file_extension = file_extension[0]
+
     # TODO remove yaml/json level, return data directly
     # TODO add param to specifc formula path/location manually
     defaults_files = _cache_files(formula, file_extension, saltenv)
