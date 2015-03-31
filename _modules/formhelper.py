@@ -12,7 +12,7 @@ import yaml
 
 import salt.fileclient
 import salt.utils
-from salt.utils.dictupdate import update
+import salt.utils.dictupdate
 
 
 def _mk_file_client():
@@ -62,6 +62,9 @@ def _load_data(cached_file):
 
 
 def generate_state(state_module, state_function, attrs=[]):
+    '''
+    Generate a SaltStack state definion based on given state module name, function and optional attributes.
+    '''
     attrs.insert(0, state_function)
     return {state_module: attrs}
 
@@ -98,7 +101,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
         for grain, file_maps in merged_maps.items():
             defaults_map = merged_maps[grain].get('defaults', {})
             custom_defaults_map = merged_maps[grain].get('custom_defaults', {})
-            update(defaults_map, custom_defaults_map)
+            salt.utils.dictupdate.update(defaults_map, custom_defaults_map)
             merged_maps[grain] = defaults_map
 
         merged_grain_maps = {}
@@ -112,11 +115,11 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
                 merged_grain_maps = grain_map
                 continue
 
-            update(merged_grain_maps, grain_map)
+            salt.utils.dictupdate.update(merged_grain_maps, grain_map)
         merged_maps = merged_grain_maps
 
         pillar_path = '{formula}:lookup'.format(formula=formula)
-        update(merged_maps, __salt__['pillar.get'](pillar_path, {}))
+        salt.utils.dictupdate.update(merged_maps, __salt__['pillar.get'](pillar_path, {}))
 
         return merged_maps
     else:
