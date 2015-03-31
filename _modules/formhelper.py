@@ -121,6 +121,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
         pillar_path = '{formula}:lookup'.format(formula=formula)
         salt.utils.dictupdate.update(merged_maps, __salt__['pillar.get'](pillar_path, {}))
 
+        merged_maps.update({file_extension: dict(merged_maps)})
         return merged_maps
     else:
        return defaults_files
