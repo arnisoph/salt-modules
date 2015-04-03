@@ -350,35 +350,35 @@ def mapping_get(index, doc_type, hosts=None, profile='elasticsearch'):
     return None
 
 
-def index_template_create(index, doc_type, body, hosts=None, profile='elasticsearch'):
+def index_template_create(name, body, hosts=None, profile='elasticsearch'):
     '''
     Create an index template
 
     CLI example::
 
-        salt myminion elasticsearch.template_create testindex user '{ "user" : { "properties" : { "message" : {"type" : "string", "store" : true } } } }'
+        salt myminion elasticsearch.index_template_create testindex_templ '{ "template": "logstash-*", "order": 1, "settings": { "number_of_shards": 1 } }'
     '''
     es = _get_instance(hosts, profile)
     try:
-        result = es.indices.put_template(index=index, doc_type=doc_type, body=body)  # TODO error handling
+        result = es.indices.put_template(name=name, body=body)  # TODO error handling
         return True
     except elasticsearch.exceptions.NotFoundError:
         return None
     return None
 
 
-def index_template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
+def index_template_delete(name, hosts=None, profile='elasticsearch'):
     '''
     Delete an index template (type) along with its data
 
     CLI example::
 
-        salt myminion elasticsearch.index_template_delete testindex user
+        salt myminion elasticsearch.index_template_delete testindex_templ user
     '''
     es = _get_instance(hosts, profile)
     try:
-        # TODO check if template exists, add method template_exists()
-        result = es.indices.delete_template(index=index, doc_type=doc_type)
+        # TODO check if template exists, add method template_exists() ?
+        result = es.indices.delete_template(name=name)
 
         if result.get('acknowledged', False):  # TODO error handling
             return True
@@ -387,18 +387,37 @@ def index_template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
     return None
 
 
-def index_template_get(index, doc_type, hosts=None, profile='elasticsearch'):
+def index_template_exists(name, hosts=None, profile='elasticsearch'):
+    '''
+    Return a boolean indicating whether given index template exists
+
+    CLI example::
+
+        salt myminion elasticsearch.index_template_exists testindex_templ
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        if es.indices.exists_template(name=name):
+            return True
+        else:
+            return False
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def index_template_get(name, hosts=None, profile='elasticsearch'):
     '''
     Retrieve template definition of index or index/type
 
     CLI example::
 
-        salt myminion elasticsearch.index_template_get testindex user
+        salt myminion elasticsearch.index_template_get testindex_templ user
     '''
     es = _get_instance(hosts, profile)
 
     try:
-        ret = es.indices.get_template(index=index, doc_type=doc_type)  # TODO error handling
+        ret = es.indices.get_template(name=name)  # TODO error handling
         return ret
     except elasticsearch.exceptions.NotFoundError:
         return None

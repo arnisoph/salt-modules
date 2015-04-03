@@ -46,42 +46,41 @@ def absent(name):
 
             if ret['result']:
                 ret['comment'] = 'Removed index {0} successfully'.format(name)
+                # TODO show pending changes (body)!
             else:
                 ret['comment'] = 'Failed to remove index {0}'.format(name)  #TODO error handling
     elif index_exists == False:
         ret['comment'] = 'Index {0} is already absent'.format(name)
     else:
-        ret['comment'] = 'Failed to determine whether index {0} is absent, see Minion log for more information'.format(
-            name)
+        ret['comment'] = 'Failed to determine whether index {0} is absent, see Minion log for more information'.format(name)
         ret['result'] = False
 
     return ret
 
 
-def present(name, body={}):
+def present(name, definition):
     '''
     Ensure that the named index is present
     '''
 
     ret = {'name': name, 'changes': {}, 'result': True, 'comment': ''}
 
-    index_exists = __salt__['elasticsearcharbe.index_exists'](name)
+    index_exists = __salt__['elasticsearcharbe.index_exists'](name=name)
     if index_exists == False:
         if __opts__['test']:
             ret['comment'] = 'Index {0} will be created'.format(name)
             ret['result'] = None
         else:
-            ret['result'] = __salt__['elasticsearcharbe.index_create'](index=name, body=body)
-            # TODO show pending changes (body)?
-            ret['changes'] = __salt__['elasticsearcharbe.index_get'](index=name)
+            ret['result'] = __salt__['elasticsearcharbe.index_create'](index=name, body=definition)
+            # TODO show pending changes (body)!
+            #ret['changes'] = __salt__['elasticsearcharbe.index_get'](index=name)
 
             if ret['result']:
                 ret['comment'] = 'Created index {0} successfully'.format(name)
     elif index_exists:
         ret['comment'] = 'Index {0} is already present'.format(name)
     else:
-        ret['comment'] = 'Failed to determine whether index {0} is present, see Minion log for more information'.format(
-            name)
+        ret['comment'] = 'Failed to determine whether index {0} is present, see Minion log for more information'.format(name)
         ret['result'] = False
 
     return ret

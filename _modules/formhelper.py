@@ -33,9 +33,7 @@ def _cache_files(formula, file_extension, saltenv):
     cached_files = {}
 
     for file_name in ['defaults', 'custom_defaults']:
-        source_url = 'salt://{formula}/{file_name}.{file_ext}'.format(formula=formula,
-                                                                      file_name=file_name,
-                                                                      file_ext=file_extension)
+        source_url = 'salt://{formula}/{file_name}.{file_ext}'.format(formula=formula, file_name=file_name, file_ext=file_extension)
         cached_file = __context__['cp.fileclient'].cache_file(source_url, saltenv)
 
         if cached_file:
