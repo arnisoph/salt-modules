@@ -36,6 +36,103 @@ def __virtual__():
     return True
 
 
+def _get_instance(hosts, profile):
+    '''
+    Return the elasticsearch instance
+    '''
+    if profile:
+        if isinstance(profile, string_types):
+            _profile = __salt__['config.option'](profile)
+        elif isinstance(profile, dict):
+            _profile = profile
+        if _profile:
+            hosts = _profile.get('host')
+            if not hosts:
+                hosts = _profile.get('hosts')
+    if isinstance(hosts, string_types):
+        hosts = [hosts]
+    return elasticsearch.Elasticsearch(hosts)
+
+
+def document_create(index, doc_type, body={}, hosts=None, profile='elasticsearch'):
+    '''
+    Create a document in a specified index
+
+    CLI example::
+
+        salt myminion elasticsearch.document_create testindex doctype1 '{}'
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        result = es.index(index=index, doc_type=doc_type, body=body) # TODO error handling
+        return True
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def document_delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
+    '''
+    Delete a document from an index in Elasticsearch
+
+    CLI example::
+
+        salt myminion elasticsearch.document_delete testindex doctype1 AUx-384m0Bug_8U80wQZ
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        if not index_exists(index=index):
+            return True
+        else:
+            result = es.delete(index=index, doc_type=doc_type, id=id)
+
+            if result.get('found', False): # TODO error handling
+                return True
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def document_exists(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
+    '''
+    Return a boolean indicating whether given document exists
+
+    CLI example::
+
+        salt myminion elasticsearch.document_exists testindex AUx-384m0Bug_8U80wQZ
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        if es.exists(index=index, id=id, doc_type=doc_type):
+            return True
+        else:
+            return False
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    except elasticsearch.exceptions.ConnectionError:
+        # TODO log error
+        return None
+    return None
+
+
+def document_get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
+    '''
+    Check for the existence of a document and if it exists, return it
+
+    CLI example::
+
+        salt myminion elasticsearch.document_get testindex AUx-384m0Bug_8U80wQZ
+    '''
+    es = _get_instance(hosts, profile)
+
+    try:
+        ret = es.get(index=index, id=id, doc_type=doc_type) # TODO error handling
+        return ret
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
 def index_create(index, body={}, hosts=None, profile='elasticsearch'):
     '''
     Create an index in Elasticsearch
@@ -104,7 +201,7 @@ def index_exists(index, hosts=None, profile='elasticsearch'):
 
 def index_get(index, hosts=None, profile='elasticsearch'):
     '''
-    Check for the existence of an Elasticsearch index and if it's existent, return index details
+    Check for the existence of an index and if it exists, return it
 
     CLI example::
 
@@ -193,13 +290,13 @@ def index_template_create(index, doc_type, body, hosts=None, profile='elasticsea
     return None
 
 
-def template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
+def index_template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
     '''
-    Delete a template (type) along with its data
+    Delete an index template (type) along with its data
 
     CLI example::
 
-        salt myminion elasticsearch.template_delete testindex user
+        salt myminion elasticsearch.index_template_delete testindex user
     '''
     es = _get_instance(hosts, profile)
     try:
@@ -213,13 +310,13 @@ def template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
     return None
 
 
-def template_get(index, doc_type, hosts=None, profile='elasticsearch'):
+def index_template_get(index, doc_type, hosts=None, profile='elasticsearch'):
     '''
     Retrieve template definition of index or index/type
 
     CLI example::
 
-        salt myminion elasticsearch.template_get testindex user
+        salt myminion elasticsearch.index_template_get testindex user
     '''
     es = _get_instance(hosts, profile)
 
@@ -229,80 +326,3 @@ def template_get(index, doc_type, hosts=None, profile='elasticsearch'):
     except elasticsearch.exceptions.NotFoundError:
         return None
     return None
-
-
-####################################
-def exists(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
-    '''
-    Check for the existence of an elasticsearch document specified by id in the
-    index.
-
-    CLI example::
-
-        salt myminion elasticsearch.exists testindex mydash profile='grafana'
-    '''
-    es = _get_instance(hosts, profile)
-    try:
-        return es.exists(index=index, id=id, doc_type=doc_type)
-    except elasticsearch.exceptions.NotFoundError:
-        return False
-
-
-def index_foo(index, doc_type, body, id=None, hosts=None, profile='elasticsearch'):
-    '''
-    Create or update an index with the specified body for the specified id.
-
-    CLI example::
-
-        salt myminion elasticsearch.index testindex dashboard '{"user":"guest","group":"guest","body":"",...}' mydash profile='grafana'
-    '''
-    es = _get_instance(hosts, profile)
-    return es.index(index=index, doc_type=doc_type, body=body, id=id)
-
-
-def get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
-    '''
-    Get the contents of the specifed id from the index.
-
-    CLI example::
-
-        salt myminion elasticsearch.get testindex mydash profile='grafana'
-    '''
-    es = _get_instance(hosts, profile)
-    return es.get(index=index, id=id, doc_type=doc_type)
-
-
-def delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
-    '''
-    Delete the document specified by the id in the index.
-
-    CLI example::
-
-        salt myminion elasticsearch.delete testindex dashboard mydash profile='grafana'
-    '''
-    es = _get_instance(hosts, profile)
-    try:
-        es.delete(index=index, doc_type=doc_type, id=id)
-        return True
-    except elasticsearch.exceptions.NotFoundError:
-        return True
-    except Exception:
-        return False
-
-
-def _get_instance(hosts, profile):
-    '''
-    Return the elasticsearch instance
-    '''
-    if profile:
-        if isinstance(profile, string_types):
-            _profile = __salt__['config.option'](profile)
-        elif isinstance(profile, dict):
-            _profile = profile
-        if _profile:
-            hosts = _profile.get('host')
-            if not hosts:
-                hosts = _profile.get('hosts')
-    if isinstance(hosts, string_types):
-        hosts = [hosts]
-    return elasticsearch.Elasticsearch(hosts)
