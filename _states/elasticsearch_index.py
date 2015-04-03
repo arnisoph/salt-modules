@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 '''
 State module to manage Elasticsearch indices
 
@@ -15,7 +14,7 @@ log = logging.getLogger(__name__)
 
 # Import third party libs
 try:
-    import elasticsearch #TODO use test function of custom modules?
+    import elasticsearch  #TODO use test function of custom modules?
     HAS_ELASTICSEARCH = True
 except ImportError:
     HAS_ELASTICSEARCH = False
@@ -35,10 +34,7 @@ def absent(name):
     Ensure that the named index is absent
     '''
 
-    ret = {'name': name,
-           'changes': {},
-           'result': True,
-           'comment': ''}
+    ret = {'name': name, 'changes': {}, 'result': True, 'comment': ''}
 
     index_exists = __salt__['elasticsearcharbe.index_exists'](index=name)
     if index_exists:
@@ -51,11 +47,12 @@ def absent(name):
             if ret['result']:
                 ret['comment'] = 'Removed index {0} successfully'.format(name)
             else:
-                ret['comment'] = 'Failed to remove index {0}'.format(name) #TODO error handling
+                ret['comment'] = 'Failed to remove index {0}'.format(name)  #TODO error handling
     elif index_exists == False:
         ret['comment'] = 'Index {0} is already absent'.format(name)
     else:
-        ret['comment'] = 'Failed to determine whether index {0} is absent, see Minion log for more information'.format(name)
+        ret['comment'] = 'Failed to determine whether index {0} is absent, see Minion log for more information'.format(
+            name)
         ret['result'] = False
 
     return ret
@@ -66,10 +63,7 @@ def present(name, body={}):
     Ensure that the named index is present
     '''
 
-    ret = {'name': name,
-           'changes': {},
-           'result': True,
-           'comment': ''}
+    ret = {'name': name, 'changes': {}, 'result': True, 'comment': ''}
 
     index_exists = __salt__['elasticsearcharbe.index_exists'](name)
     if index_exists == False:
@@ -86,7 +80,8 @@ def present(name, body={}):
     elif index_exists:
         ret['comment'] = 'Index {0} is already present'.format(name)
     else:
-        ret['comment'] = 'Failed to determine whether index {0} is present, see Minion log for more information'.format(name)
+        ret['comment'] = 'Failed to determine whether index {0} is present, see Minion log for more information'.format(
+            name)
         ret['result'] = False
 
     return ret

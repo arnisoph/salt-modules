@@ -65,7 +65,7 @@ def alias_create(indices, alias, hosts=None, body=None, profile='elasticsearch')
     '''
     es = _get_instance(hosts, profile)
     try:
-        result = es.indices.put_alias(index=indices, name=alias, body=body) # TODO error handling
+        result = es.indices.put_alias(index=indices, name=alias, body=body)  # TODO error handling
         return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -82,10 +82,10 @@ def alias_delete(indices, aliases, hosts=None, body=None, profile='elasticsearch
     '''
     es = _get_instance(hosts, profile)
     try:
-       result = es.indices.delete_alias(index=indices, name=aliases)
+        result = es.indices.delete_alias(index=indices, name=aliases)
 
-       if result.get('acknowledged', False): # TODO error handling
-           return True
+        if result.get('acknowledged', False):  # TODO error handling
+            return True
     except elasticsearch.exceptions.NotFoundError:
         return None
     return None
@@ -124,7 +124,7 @@ def alias_get(indices=None, aliases=None, hosts=None, profile='elasticsearch'):
     es = _get_instance(hosts, profile)
 
     try:
-        ret = es.indices.get_alias(index=indices, name=aliases) # TODO error handling
+        ret = es.indices.get_alias(index=indices, name=aliases)  # TODO error handling
         return ret
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -141,7 +141,7 @@ def document_create(index, doc_type, body=None, hosts=None, profile='elasticsear
     '''
     es = _get_instance(hosts, profile)
     try:
-        result = es.index(index=index, doc_type=doc_type, body=body) # TODO error handling
+        result = es.index(index=index, doc_type=doc_type, body=body)  # TODO error handling
         return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -163,7 +163,7 @@ def document_delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
         else:
             result = es.delete(index=index, doc_type=doc_type, id=id)
 
-            if result.get('found', False): # TODO error handling
+            if result.get('found', False):  # TODO error handling
                 return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -203,7 +203,7 @@ def document_get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'
     es = _get_instance(hosts, profile)
 
     try:
-        ret = es.get(index=index, id=id, doc_type=doc_type) # TODO error handling
+        ret = es.get(index=index, id=id, doc_type=doc_type)  # TODO error handling
         return ret
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -223,7 +223,7 @@ def index_create(index, body=None, hosts=None, profile='elasticsearch'):
         if index_exists(index):
             return True
         else:
-            result = es.indices.create(index=index, body=body) # TODO error handling
+            result = es.indices.create(index=index, body=body)  # TODO error handling
             return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -245,7 +245,7 @@ def index_delete(index, hosts=None, profile='elasticsearch'):
         else:
             result = es.indices.delete(index=index)
 
-            if result.get('acknowledged', False): # TODO error handling
+            if result.get('acknowledged', False):  # TODO error handling
                 return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -263,7 +263,7 @@ def index_exists(index, hosts=None, profile='elasticsearch'):
     es = _get_instance(hosts, profile)
     try:
         if not isinstance(index, list):
-            index=[index]
+            index = [index]
         if es.indices.exists(index=index):
             return True
         else:
@@ -288,7 +288,7 @@ def index_get(index, hosts=None, profile='elasticsearch'):
 
     try:
         if index_exists(index):
-            ret = es.indices.get(index=index) # TODO error handling
+            ret = es.indices.get(index=index)  # TODO error handling
             return ret
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -305,7 +305,7 @@ def mapping_create(index, doc_type, body, hosts=None, profile='elasticsearch'):
     '''
     es = _get_instance(hosts, profile)
     try:
-        result = es.indices.put_mapping(index=index, doc_type=doc_type, body=body) # TODO error handling
+        result = es.indices.put_mapping(index=index, doc_type=doc_type, body=body)  # TODO error handling
         return mapping_get(index, doc_type)
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -325,7 +325,7 @@ def mapping_delete(index, doc_type, hosts=None, profile='elasticsearch'):
         # TODO check if mapping exists, add method mapping_exists()
         result = es.indices.delete_mapping(index=index, doc_type=doc_type)
 
-        if result.get('acknowledged', False): # TODO error handling
+        if result.get('acknowledged', False):  # TODO error handling
             return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -343,7 +343,7 @@ def mapping_get(index, doc_type, hosts=None, profile='elasticsearch'):
     es = _get_instance(hosts, profile)
 
     try:
-        ret = es.indices.get_mapping(index=index, doc_type=doc_type) # TODO error handling
+        ret = es.indices.get_mapping(index=index, doc_type=doc_type)  # TODO error handling
         return ret
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -360,7 +360,7 @@ def index_template_create(index, doc_type, body, hosts=None, profile='elasticsea
     '''
     es = _get_instance(hosts, profile)
     try:
-        result = es.indices.put_template(index=index, doc_type=doc_type, body=body) # TODO error handling
+        result = es.indices.put_template(index=index, doc_type=doc_type, body=body)  # TODO error handling
         return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -380,7 +380,7 @@ def index_template_delete(index, doc_type, hosts=None, profile='elasticsearch'):
         # TODO check if template exists, add method template_exists()
         result = es.indices.delete_template(index=index, doc_type=doc_type)
 
-        if result.get('acknowledged', False): # TODO error handling
+        if result.get('acknowledged', False):  # TODO error handling
             return True
     except elasticsearch.exceptions.NotFoundError:
         return None
@@ -398,7 +398,7 @@ def index_template_get(index, doc_type, hosts=None, profile='elasticsearch'):
     es = _get_instance(hosts, profile)
 
     try:
-        ret = es.indices.get_template(index=index, doc_type=doc_type) # TODO error handling
+        ret = es.indices.get_template(index=index, doc_type=doc_type)  # TODO error handling
         return ret
     except elasticsearch.exceptions.NotFoundError:
         return None
