@@ -8,11 +8,11 @@ from datetime import datetime
 
 def strftime(format=''):
     '''Return a string representing the date and time, controlled by an explicit
-  format string. For a complete list of formatting directives, see TODO:Python-Docs
+    format string. For a complete list of formatting directives, see TODO:Python-Docs
 
-  CLI Example::
-    salt myserver datetimeutil.strftime '%H:%M:%S'
-  '''
+    CLI Example::
+      salt myserver datetimeutil.strftime '%H:%M:%S'
+    '''
 
     output = datetime.now().strftime(format)
 
