@@ -8,6 +8,7 @@ notice: early state, etc.
 '''
 # TODO
 # * improve error/ exception handling
+# * implement update methods?
 
 from __future__ import absolute_import
 
@@ -54,7 +55,83 @@ def _get_instance(hosts, profile):
     return elasticsearch.Elasticsearch(hosts)
 
 
-def document_create(index, doc_type, body={}, hosts=None, profile='elasticsearch'):
+def alias_create(indices, alias, hosts=None, body=None, profile='elasticsearch'):
+    '''
+    Create an alias for a specific index/indices
+
+    CLI example::
+
+        salt myminion elasticsearch.alias_create testindex_v1 testindex
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        result = es.indices.put_alias(index=indices, name=alias, body=body) # TODO error handling
+        return True
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def alias_delete(indices, aliases, hosts=None, body=None, profile='elasticsearch'):
+    '''
+    Delete an alias of an index
+
+    CLI example::
+
+        salt myminion elasticsearch.alias_delete testindex_v1 testindex
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+       result = es.indices.delete_alias(index=indices, name=aliases)
+
+       if result.get('acknowledged', False): # TODO error handling
+           return True
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def alias_exists(aliases, indices=None, hosts=None, profile='elasticsearch'):
+    '''
+    Return a boolean indicating whether given alias exists
+
+    CLI example::
+
+        salt myminion elasticsearch.alias_exists testindex
+    '''
+    es = _get_instance(hosts, profile)
+    try:
+        if es.indices.exists_alias(name=aliases, index=indices):
+            return True
+        else:
+            return False
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    except elasticsearch.exceptions.ConnectionError:
+        # TODO log error
+        return None
+    return None
+
+
+def alias_get(indices=None, aliases=None, hosts=None, profile='elasticsearch'):
+    '''
+    Check for the existence of an alias and if it exists, return it
+
+    CLI example::
+
+        salt myminion elasticsearch.alias_get testindex
+    '''
+    es = _get_instance(hosts, profile)
+
+    try:
+        ret = es.indices.get_alias(index=indices, name=aliases) # TODO error handling
+        return ret
+    except elasticsearch.exceptions.NotFoundError:
+        return None
+    return None
+
+
+def document_create(index, doc_type, body=None, hosts=None, profile='elasticsearch'):
     '''
     Create a document in a specified index
 
@@ -73,7 +150,7 @@ def document_create(index, doc_type, body={}, hosts=None, profile='elasticsearch
 
 def document_delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
     '''
-    Delete a document from an index in Elasticsearch
+    Delete a document from an index
 
     CLI example::
 
@@ -133,9 +210,9 @@ def document_get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'
     return None
 
 
-def index_create(index, body={}, hosts=None, profile='elasticsearch'):
+def index_create(index, body=None, hosts=None, profile='elasticsearch'):
     '''
-    Create an index in Elasticsearch
+    Create an index
 
     CLI example::
 
@@ -155,7 +232,7 @@ def index_create(index, body={}, hosts=None, profile='elasticsearch'):
 
 def index_delete(index, hosts=None, profile='elasticsearch'):
     '''
-    Delete an index in Elasticsearch
+    Delete an index
 
     CLI example::
 
