@@ -3,8 +3,6 @@
 A wrapper for disk.usage
 '''
 
-__virtual__ = 'diskarbe'
-
 
 def usage():
     '''
