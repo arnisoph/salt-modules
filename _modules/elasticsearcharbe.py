@@ -27,6 +27,8 @@ except ImportError:
 
 from salt.ext.six import string_types
 
+__virtualname__ = 'elasticsearcharbe'
+
 
 def __virtual__():
     '''
