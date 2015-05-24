@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 A wrapper for disk.usage
-'''
+"""
 
 
 def usage():
-    '''
+    """
     A wrapper for disk.usage that returns numbers as integer/ float typed values
-    '''
+    """
 
     def num(s):
         try:

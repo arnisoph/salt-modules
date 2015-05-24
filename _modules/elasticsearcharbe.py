@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Connection module for Elasticsearch
 
 notice: early state, etc.
 
 :depends: elasticsearch
-'''
+"""
 # TODO
 # * improve error/ exception handling
 # * implement update methods?
@@ -29,18 +29,18 @@ from salt.ext.six import string_types
 
 
 def __virtual__():
-    '''
+    """
     Only load if elasticsearch libraries exist.
-    '''
+    """
     if not HAS_ELASTICSEARCH:
         return False
     return True
 
 
 def _get_instance(hosts, profile):
-    '''
+    """
     Return the elasticsearch instance
-    '''
+    """
     if profile:
         if isinstance(profile, string_types):
             _profile = __salt__['config.option'](profile)
@@ -56,13 +56,13 @@ def _get_instance(hosts, profile):
 
 
 def alias_create(indices, alias, hosts=None, body=None, profile='elasticsearch'):
-    '''
+    """
     Create an alias for a specific index/indices
 
     CLI example::
 
         salt myminion elasticsearch.alias_create testindex_v1 testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         result = es.indices.put_alias(index=indices, name=alias, body=body)  # TODO error handling
@@ -73,13 +73,13 @@ def alias_create(indices, alias, hosts=None, body=None, profile='elasticsearch')
 
 
 def alias_delete(indices, aliases, hosts=None, body=None, profile='elasticsearch'):
-    '''
+    """
     Delete an alias of an index
 
     CLI example::
 
         salt myminion elasticsearch.alias_delete testindex_v1 testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         result = es.indices.delete_alias(index=indices, name=aliases)
@@ -92,13 +92,13 @@ def alias_delete(indices, aliases, hosts=None, body=None, profile='elasticsearch
 
 
 def alias_exists(aliases, indices=None, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Return a boolean indicating whether given alias exists
 
     CLI example::
 
         salt myminion elasticsearch.alias_exists testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if es.indices.exists_alias(name=aliases, index=indices):
@@ -114,13 +114,13 @@ def alias_exists(aliases, indices=None, hosts=None, profile='elasticsearch'):
 
 
 def alias_get(indices=None, aliases=None, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Check for the existence of an alias and if it exists, return it
 
     CLI example::
 
         salt myminion elasticsearch.alias_get testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
 
     try:
@@ -132,13 +132,13 @@ def alias_get(indices=None, aliases=None, hosts=None, profile='elasticsearch'):
 
 
 def document_create(index, doc_type, body=None, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Create a document in a specified index
 
     CLI example::
 
         salt myminion elasticsearch.document_create testindex doctype1 '{}'
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         result = es.index(index=index, doc_type=doc_type, body=body)  # TODO error handling
@@ -149,13 +149,13 @@ def document_create(index, doc_type, body=None, hosts=None, profile='elasticsear
 
 
 def document_delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Delete a document from an index
 
     CLI example::
 
         salt myminion elasticsearch.document_delete testindex doctype1 AUx-384m0Bug_8U80wQZ
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if not index_exists(index=index):
@@ -171,13 +171,13 @@ def document_delete(index, doc_type, id, hosts=None, profile='elasticsearch'):
 
 
 def document_exists(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
-    '''
+    """
     Return a boolean indicating whether given document exists
 
     CLI example::
 
         salt myminion elasticsearch.document_exists testindex AUx-384m0Bug_8U80wQZ
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if es.exists(index=index, id=id, doc_type=doc_type):
@@ -193,13 +193,13 @@ def document_exists(index, id, doc_type='_all', hosts=None, profile='elasticsear
 
 
 def document_get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'):
-    '''
+    """
     Check for the existence of a document and if it exists, return it
 
     CLI example::
 
         salt myminion elasticsearch.document_get testindex AUx-384m0Bug_8U80wQZ
-    '''
+    """
     es = _get_instance(hosts, profile)
 
     try:
@@ -211,13 +211,13 @@ def document_get(index, id, doc_type='_all', hosts=None, profile='elasticsearch'
 
 
 def index_create(index, body=None, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Create an index
 
     CLI example::
 
         salt myminion elasticsearch.index_create testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if index_exists(index):
@@ -231,13 +231,13 @@ def index_create(index, body=None, hosts=None, profile='elasticsearch'):
 
 
 def index_delete(index, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Delete an index
 
     CLI example::
 
         salt myminion elasticsearch.index_delete testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if not index_exists(index=index):
@@ -253,13 +253,13 @@ def index_delete(index, hosts=None, profile='elasticsearch'):
 
 
 def index_exists(index, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Return a boolean indicating whether given index exists
 
     CLI example::
 
         salt myminion elasticsearch.index_exists testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if not isinstance(index, list):
@@ -277,13 +277,13 @@ def index_exists(index, hosts=None, profile='elasticsearch'):
 
 
 def index_get(index, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Check for the existence of an index and if it exists, return it
 
     CLI example::
 
         salt myminion elasticsearch.index_get testindex
-    '''
+    """
     es = _get_instance(hosts, profile)
 
     try:
@@ -296,13 +296,13 @@ def index_get(index, hosts=None, profile='elasticsearch'):
 
 
 def mapping_create(index, doc_type, body, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Create a mapping in a given index
 
     CLI example::
 
         salt myminion elasticsearch.mapping_create testindex user '{ "user" : { "properties" : { "message" : {"type" : "string", "store" : true } } } }'
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         result = es.indices.put_mapping(index=index, doc_type=doc_type, body=body)  # TODO error handling
@@ -313,13 +313,13 @@ def mapping_create(index, doc_type, body, hosts=None, profile='elasticsearch'):
 
 
 def mapping_delete(index, doc_type, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Delete a mapping (type) along with its data
 
     CLI example::
 
         salt myminion elasticsearch.mapping_delete testindex user
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         # TODO check if mapping exists, add method mapping_exists()
@@ -333,13 +333,13 @@ def mapping_delete(index, doc_type, hosts=None, profile='elasticsearch'):
 
 
 def mapping_get(index, doc_type, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Retrieve mapping definition of index or index/type
 
     CLI example::
 
         salt myminion elasticsearch.mapping_get testindex user
-    '''
+    """
     es = _get_instance(hosts, profile)
 
     try:
@@ -351,13 +351,13 @@ def mapping_get(index, doc_type, hosts=None, profile='elasticsearch'):
 
 
 def index_template_create(name, body, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Create an index template
 
     CLI example::
 
         salt myminion elasticsearch.index_template_create testindex_templ '{ "template": "logstash-*", "order": 1, "settings": { "number_of_shards": 1 } }'
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         result = es.indices.put_template(name=name, body=body)  # TODO error handling
@@ -368,13 +368,13 @@ def index_template_create(name, body, hosts=None, profile='elasticsearch'):
 
 
 def index_template_delete(name, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Delete an index template (type) along with its data
 
     CLI example::
 
         salt myminion elasticsearch.index_template_delete testindex_templ user
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         # TODO check if template exists, add method template_exists() ?
@@ -388,13 +388,13 @@ def index_template_delete(name, hosts=None, profile='elasticsearch'):
 
 
 def index_template_exists(name, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Return a boolean indicating whether given index template exists
 
     CLI example::
 
         salt myminion elasticsearch.index_template_exists testindex_templ
-    '''
+    """
     es = _get_instance(hosts, profile)
     try:
         if es.indices.exists_template(name=name):
@@ -407,13 +407,13 @@ def index_template_exists(name, hosts=None, profile='elasticsearch'):
 
 
 def index_template_get(name, hosts=None, profile='elasticsearch'):
-    '''
+    """
     Retrieve template definition of index or index/type
 
     CLI example::
 
         salt myminion elasticsearch.index_template_get testindex_templ user
-    '''
+    """
     es = _get_instance(hosts, profile)
 
     try:

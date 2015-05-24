@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 State module to manage Elasticsearch indices
 
-'''
+"""
 
 # Import python libs
 from __future__ import absolute_import
@@ -21,18 +21,18 @@ except ImportError:
 
 
 def __virtual__():
-    '''
+    """
     Only load if elasticsearch libraries exist.
-    '''
+    """
     if not HAS_ELASTICSEARCH:
         return False
     return True
 
 
 def absent(name):
-    '''
+    """
     Ensure that the named index is absent
-    '''
+    """
 
     ret = {'name': name, 'changes': {}, 'result': True, 'comment': ''}
 
@@ -59,9 +59,9 @@ def absent(name):
 
 
 def present(name, definition):
-    '''
+    """
     Ensure that the named index is present
-    '''
+    """
 
     ret = {'name': name, 'changes': {}, 'result': True, 'comment': ''}
 

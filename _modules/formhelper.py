@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-'''
+"""
 Module that provides helper functions used by formulas
-'''
+"""
 from __future__ import absolute_import
 
 # Import python libs
@@ -16,18 +16,18 @@ import salt.utils.dictupdate
 
 
 def _mk_file_client():
-    '''
+    """
     Create a file client and add it to the context
-    '''
+    """
     if 'cp.fileclient' not in __context__:
         __context__['cp.fileclient'] = salt.fileclient.get_file_client(__opts__)
 
 
 def _cache_files(formula, file_extension, saltenv):
-    '''
+    """
     Generates a list of salt://<pillar_name>/defaults.(json|yaml) files
     and fetches them from the Salt master.
-    '''
+    """
     _mk_file_client()
     formula = formula.replace('.', '/')
     cached_files = {}
@@ -43,11 +43,11 @@ def _cache_files(formula, file_extension, saltenv):
 
 
 def _load_data(cached_file):
-    '''
+    """
     Given a pillar_name and the template cache location, attempt to load
     the defaults.json from the cache location. If it does not exist, try
     defaults.yaml.
-    '''
+    """
     file_name, file_type = os.path.splitext(cached_file)
     loader = None
 
@@ -62,15 +62,15 @@ def _load_data(cached_file):
 
 
 def generate_state(state_module, state_function, attrs=[]):
-    '''
+    """
     Generate a SaltStack state definion based on given state module name, function and optional attributes.
-    '''
+    """
     attrs.insert(0, state_function)
     return {state_module: attrs}
 
 
 def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
-    '''
+    """
     Read a formula's defaults files like ``defaults.(yaml|json)`` and ``custom_defaults.(yaml|json)``,
     filter maps based on grains and override the result with pillars (if set).
 
@@ -79,7 +79,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
     .. code-block:: bash
 
         salt-call formhelper.defaults skeleton
-    '''
+    """
 
     if isinstance(file_extension, list):
         file_extension = file_extension[0]
