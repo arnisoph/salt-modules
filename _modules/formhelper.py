@@ -100,7 +100,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
             for grain, rawmap in rawmaps.items():
                 if grain not in merged_maps.keys():
                     merged_maps[grain] = {}
-                merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain)
+                merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain) or {}
 
         for grain, file_maps in merged_maps.items():
             defaults_map = merged_maps[grain].get('defaults', {})
