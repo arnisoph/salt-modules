@@ -19,8 +19,8 @@ def _mk_file_client():
     """
     Create a file client and add it to the context
     """
-    if 'cp.fileclient' not in __context__:
-        __context__['cp.fileclient'] = salt.fileclient.get_file_client(__opts__)
+    if 'cp.fileclient' not in __context__:  # NOQA
+        __context__['cp.fileclient'] = salt.fileclient.get_file_client(__opts__)  # NOQA
 
 
 def _cache_files(formula, file_extension, saltenv):
@@ -34,7 +34,7 @@ def _cache_files(formula, file_extension, saltenv):
 
     for file_name in ['defaults', 'custom_defaults']:
         source_url = 'salt://{formula}/{file_name}.{file_ext}'.format(formula=formula, file_name=file_name, file_ext=file_extension)
-        cached_file = __context__['cp.fileclient'].cache_file(source_url, saltenv)
+        cached_file = __context__['cp.fileclient'].cache_file(source_url, saltenv)  # NOQA
 
         if cached_file:
             cached_files[file_name] = _load_data(cached_file)
@@ -100,7 +100,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
             for grain, rawmap in rawmaps.items():
                 if grain not in merged_maps.keys():
                     merged_maps[grain] = {}
-                merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain) or {}
+                merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain) or {}  # NOQA
 
         for grain, file_maps in merged_maps.items():
             defaults_map = merged_maps[grain].get('defaults', {})
@@ -123,7 +123,7 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
         merged_maps = merged_grain_maps
 
         pillar_path = '{formula}:lookup'.format(formula=formula)
-        salt.utils.dictupdate.update(merged_maps, __salt__['pillar.get'](pillar_path, {}))
+        salt.utils.dictupdate.update(merged_maps, __salt__['pillar.get'](pillar_path, {}))  # NOQA
 
         merged_maps.update({file_extension: dict(merged_maps)})
         return merged_maps
