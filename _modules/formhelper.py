@@ -6,6 +6,7 @@ Module that provides helper functions used by formulas
 from __future__ import absolute_import
 
 # Import python libs
+from collections import OrderedDict
 import json
 import os
 import yaml
@@ -13,6 +14,16 @@ import yaml
 import salt.fileclient
 import salt.utils
 import salt.utils.dictupdate
+
+
+def __sorted_dict(var):
+    """
+    Return a sorted dict as OrderedDict
+    """
+    ret = OrderedDict()
+    for key in sorted(list(var.keys())):
+        ret[key] = var[key]
+    return ret
 
 
 def _mk_file_client():
@@ -96,20 +107,20 @@ def defaults(formula, saltenv='base', file_extension='yaml', merge=True):
     if merge:
         merged_maps = {}
 
-        for file_name, rawmaps in defaults_files.items():
-            for grain, rawmap in rawmaps.items():
+        for file_name, rawmaps in __sorted_dict(defaults_files).items():
+            for grain, rawmap in __sorted_dict(rawmaps).items():
                 if grain not in merged_maps.keys():
                     merged_maps[grain] = {}
                 merged_maps[grain][file_name] = __salt__['grains.filter_by'](rawmap, grain) or {}  # NOQA
 
-        for grain, file_maps in merged_maps.items():
+        for grain, file_maps in __sorted_dict(merged_maps).items():
             defaults_map = merged_maps[grain].get('defaults', {})
             custom_defaults_map = merged_maps[grain].get('custom_defaults', {})
             salt.utils.dictupdate.update(defaults_map, custom_defaults_map)
             merged_maps[grain] = defaults_map
 
         merged_grain_maps = {}
-        for grain, grain_map in merged_maps.items():
+        for grain, grain_map in __sorted_dict(merged_maps).items():
 
             # Do we have something to merge?
             if grain_map is None:
