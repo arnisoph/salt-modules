@@ -19,6 +19,7 @@
 *.rar
 *.tar
 *.zip
+*.war
 
 # Logs and databases #
 ######################
@@ -37,11 +38,13 @@ ehthumbs.db
 Thumbs.db
 *.pyc
 *.slsc
+.tox/
 
 # IDEs and editors #
 ####################
 .project
 *.sw*
+.netrwhist
 .idea
 *.iml
 *~
@@ -53,3 +56,4 @@ Thumbs.db
 test/.env
 test/.vagrant/
 test/nodes.yaml
+*.box

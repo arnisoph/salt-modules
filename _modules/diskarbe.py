@@ -15,7 +15,7 @@ def usage():
         except ValueError:
             return float(s)
 
-    disk_usage = __salt__['disk.usage']()
+    disk_usage = __salt__['disk.usage']()  # NOQA
     ret = {}
 
     for k, v in disk_usage.iteritems():

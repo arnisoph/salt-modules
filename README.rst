@@ -2,14 +2,24 @@
 salt-modules
 ============
 
-.. image:: http://img.shields.io/github/tag/bechtoldt/salt-modules.svg
-    :target: https://github.com/bechtoldt/salt-modules/tags
+.. image:: https://img.shields.io/badge/donate-flattr-red.svg
+    :alt: Donate via flattr
+    :target: https://flattr.com/profile/bechtoldt
 
-.. image:: http://issuestats.com/github/bechtoldt/salt-modules/badge/issue
-    :target: http://issuestats.com/github/bechtoldt/salt-modules
+.. image:: https://img.shields.io/gratipay/bechtoldt.svg
+    :alt: Donate via Gratipay
+    :target: https://www.gratipay.com/bechtoldt/
 
-.. image:: https://api.flattr.com/button/flattr-badge-large.png
-    :target: https://flattr.com/submit/auto?user_id=bechtoldt&url=https%3A%2F%2Fgithub.com%2Fbechtoldt%2Fsalt-modules
+.. image:: https://img.shields.io/badge/license-Apache--2.0-blue.svg
+    :alt: Apache-2.0-licensed
+    :target: https://github.com/bechtoldt/salt-modules/blob/master/LICENSE
+
+.. image:: https://img.shields.io/badge/chat-gitter-brightgreen.svg
+    :alt: Join Gitter Chat
+    :target: https://gitter.im/bechtoldt/salt-modules?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. image:: https://travis-ci.org/bechtoldt/salt-modules.svg?branch=master
+       :target: https://travis-ci.org/bechtoldt/salt-modules
 
 A set of custom Salt modules which are helpful for daily work
 
