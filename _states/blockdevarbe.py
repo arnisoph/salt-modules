@@ -70,16 +70,16 @@ def tuned(name, **kwargs):
                  'read-only': 'getro',
                  'read-write': 'getro'}
 
-    if not __salt__['file.is_blkdev']:
+    if not __salt__['file.is_blkdev']:  # noqa
         ret['comment'] = ('Changes to {0} cannot be applied. '
                           'Not a block device. ').format(name)
-    elif __opts__['test']:
+    elif __opts__['test']:  # noqa
         ret['comment'] = 'Changes to {0} will be applied '.format(name)
         ret['result'] = None
         return ret
     else:
-        current = __salt__['blockdev.dump'](name)
-        changes = __salt__['blockdev.tune'](name, **kwargs)
+        current = __salt__['blockdev.dump'](name)  # noqa
+        changes = __salt__['blockdev.tune'](name, **kwargs)  # noqa
         changeset = {}
         for key in kwargs:
             if key in kwarg_map:
@@ -130,7 +130,7 @@ def formatted(name, fs_type='ext4', force=False, **kwargs):
         ret['comment'] = '{0} does not exist'.format(name)
         return ret
 
-    blk = __salt__['cmd.run']('lsblk -o fstype {0}'.format(name)).splitlines()
+    blk = __salt__['cmd.run']('lsblk -o fstype {0}'.format(name)).splitlines()  # noqa
 
     if len(blk) == 1:
         current_fs = ''
@@ -144,7 +144,7 @@ def formatted(name, fs_type='ext4', force=False, **kwargs):
         ret['comment'] = 'Invalid fs_type: {0}'.format(fs_type)
         ret['result'] = False
         return ret
-    elif __opts__['test']:
+    elif __opts__['test']:  # noqa
         ret['comment'] = 'Changes to {0} will be applied '.format(name)
         ret['result'] = None
         return ret
@@ -162,9 +162,9 @@ def formatted(name, fs_type='ext4', force=False, **kwargs):
             cmd += '-E lazy_itable_init={0} '.format(kwargs['lazy_itable_init'])
 
     cmd += name
-    cmd_mkfs_out = __salt__['cmd.run'](cmd)
-    __salt__['cmd.run']('sync')
-    blk = __salt__['cmd.run']('lsblk -o fstype {0}'.format(name)).splitlines()
+    cmd_mkfs_out = __salt__['cmd.run'](cmd)  # noqa
+    __salt__['cmd.run']('sync')  # noqa
+    blk = __salt__['cmd.run']('lsblk -o fstype {0}'.format(name)).splitlines()  # noqa
 
     if len(blk) == 1:
         current_fs = ''

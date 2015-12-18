@@ -44,7 +44,7 @@ from salt.utils.dictdiffer import DictDiffer
 
 def __virtual__():
     '''Only load if grafana v2.0 is configured.'''
-    return __salt__['config.get']('grafana_version', 1) == 2
+    return __salt__['config.get']('grafana_version', 1) == 2  # noqa
 
 
 _DEFAULT_DASHBOARD_PILLAR = 'grafana_dashboards:default'
@@ -82,7 +82,7 @@ def present(name,
     dashboard = dashboard or {}
 
     if isinstance(profile, string_types):
-        profile = __salt__['config.option'](profile)
+        profile = __salt__['config.option'](profile)  # noqa
 
     # Add pillar keys for default configuration
     base_dashboards_from_pillar = ([_DEFAULT_DASHBOARD_PILLAR] +
@@ -110,7 +110,7 @@ def present(name,
     url = 'db/{0}'.format(name)
     old_dashboard = _get(url, profile)
     if not old_dashboard:
-        if __opts__['test']:
+        if __opts__['test']:  # noqa
             ret['result'] = None
             ret['comment'] = 'Dashboard {0} is set to be created.'.format(name)
             return ret
@@ -143,7 +143,7 @@ def present(name,
                       dashboard_diff.added() or
                       dashboard_diff.removed())
     if updated_needed:
-        if __opts__['test']:
+        if __opts__['test']:  # noqa
             ret['result'] = None
             ret['comment'] = ('Dashboard {0} is set to be updated, '
                               'changes={1}').format(
@@ -186,12 +186,12 @@ def absent(name, profile='grafana'):
     ret = {'name': name, 'result': True, 'comment': '', 'changes': {}}
 
     if isinstance(profile, string_types):
-        profile = __salt__['config.option'](profile)
+        profile = __salt__['config.option'](profile)  # noqa
 
     url = 'db/{0}'.format(name)
     existing_dashboard = _get(url, profile)
     if existing_dashboard:
-        if __opts__['test']:
+        if __opts__['test']:  # noqa
             ret['result'] = None
             ret['comment'] = 'Dashboard {0} is set to be deleted.'.format(name)
             return ret
@@ -245,7 +245,7 @@ def _inherited_dashboard(dashboard, base_dashboards_from_pillar, ret):
     '''Return a dashboard with properties from parents.'''
     base_dashboards = []
     for base_dashboard_from_pillar in base_dashboards_from_pillar:
-        base_dashboard = __salt__['pillar.get'](base_dashboard_from_pillar)
+        base_dashboard = __salt__['pillar.get'](base_dashboard_from_pillar)  # noqa
         if base_dashboard:
             base_dashboards.append(base_dashboard)
         elif base_dashboard_from_pillar != _DEFAULT_DASHBOARD_PILLAR:
@@ -269,7 +269,7 @@ def _inherited_row(row, base_rows_from_pillar, ret):
     '''Return a row with properties from parents.'''
     base_rows = []
     for base_row_from_pillar in base_rows_from_pillar:
-        base_row = __salt__['pillar.get'](base_row_from_pillar)
+        base_row = __salt__['pillar.get'](base_row_from_pillar)  # noqa
         if base_row:
             base_rows.append(base_row)
         elif base_row_from_pillar != _DEFAULT_ROW_PILLAR:
@@ -290,7 +290,7 @@ def _inherited_panel(panel, base_panels_from_pillar, ret):
     '''Return a panel with properties from parents.'''
     base_panels = []
     for base_panel_from_pillar in base_panels_from_pillar:
-        base_panel = __salt__['pillar.get'](base_panel_from_pillar)
+        base_panel = __salt__['pillar.get'](base_panel_from_pillar)  # noqa
         if base_panel:
             base_panels.append(base_panel)
         elif base_panel_from_pillar != _DEFAULT_PANEL_PILLAR:
@@ -347,7 +347,7 @@ def _auto_adjust_panel_spans(dashboard):
 
 def _ensure_pinned_rows(dashboard):
     '''Pin rows to the top of the dashboard.'''
-    pinned_row_titles = __salt__['pillar.get'](_PINNED_ROWS_PILLAR)
+    pinned_row_titles = __salt__['pillar.get'](_PINNED_ROWS_PILLAR)  # noqa
     if not pinned_row_titles:
         return
 
